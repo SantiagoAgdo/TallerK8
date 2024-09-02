@@ -1,0 +1,27 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: |
+        docker build -t santiagoagdo/tallerk8img:latest .
+        docker push santiagoagdo/tallerk8img:latest
+
+    - name: Deploy to Kubernetes
+      uses: Azure/setup-kubectl@v2
+      with:
+        version: '1.22.0'
+      run: |
+        kubectl apply -f microservice-chart/deployment.yaml
+      
